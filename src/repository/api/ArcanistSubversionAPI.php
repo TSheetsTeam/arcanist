@@ -66,13 +66,7 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
     return $this;
   }
 
-  public function getSVNStatus($with_externals = true) {
-
-    //TSheet's specific change - $with_externals arg normally defaults to false
-    //but changing the default to _include_ externals by default. For our workflow
-    //this is how we want it to behave. Would probably want to make this a config/command
-    //line option if ever wanted to merge these back in with the main arcanist project, but this works for now
-
+  public function getSVNStatus($with_externals = false) {
     if ($this->svnStatus === null) {
       if ($this->statusPaths) {
         list($status) = $this->execxLocal(
@@ -135,6 +129,12 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
         }
       }
 
+      // TSheet's specific change - Normally arc marks files changed in externals
+      // directories with the externals flag as well, but when it does this it
+      // excludes them from diffs and linting. Seems to work well enough if we
+      // keep them in the file list and our workflow needs it so just skipping this
+      // and we'll include modified files in external locations in the CRs
+      /*
       foreach ($files as $path => $mask) {
         foreach ($externals as $external) {
           if (!strncmp($path.'/', $external.'/', strlen($external) + 1)) {
@@ -142,6 +142,7 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
           }
         }
       }
+      */
 
       $this->svnStatus = $files;
     }
