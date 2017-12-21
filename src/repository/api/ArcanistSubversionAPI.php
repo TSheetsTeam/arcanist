@@ -66,7 +66,13 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
     return $this;
   }
 
-  public function getSVNStatus($with_externals = false) {
+  public function getSVNStatus($with_externals = true) {
+
+    //TSheet's specific change - $with_externals arg normally defaults to false
+    //but changing the default to _include_ externals by default. For our workflow
+    //this is how we want it to behave. Would probably want to make this a config/command
+    //line option if ever wanted to merge these back in with the main arcanist project, but this works for now
+
     if ($this->svnStatus === null) {
       if ($this->statusPaths) {
         list($status) = $this->execxLocal(
