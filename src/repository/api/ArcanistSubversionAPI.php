@@ -80,7 +80,11 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
       $externals = array();
       $files = array();
 
-      foreach ($xml->target as $target) {
+      // bring in any changes in changelists as well. Just treating any modified files in any changelist
+      // as part of the working copy changes
+      $targets = array_merge(iterator_to_array($xml->target), iterator_to_array($xml->changelist));
+
+      foreach ($targets as $target) {
         $this->svnBaseRevisions = array();
         foreach ($target->entry as $entry) {
           $path = (string)$entry['path'];
